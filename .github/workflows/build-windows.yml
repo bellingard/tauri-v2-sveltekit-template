@@ -10,68 +10,43 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # 1️⃣ Checkout du code
+      # 1 - Récupère le code du dépôt
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node.js + cache pnpm
-      - name: Setup Node.js
+      # 2 -  Installe Node.js et pnpm
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 3️⃣ Setup pnpm (avec cache intégré)
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
+      - name: Install pnpm
+        run: npm install -g pnpm
 
-      # 4️⃣ Setup Rust (avec cache)
-      - name: Cache Rust
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            src-tauri/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-
-      - name: Setup Rust toolchain
+      # 3 - Installe Rust (pour Tauri)
+      - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      # 5️⃣ Cache du dossier Tauri system (pour éviter les gros re-téléchargements)
-      - name: Cache Tauri system deps
-        uses: actions/cache@v4
-        with:
-          path: |
-            C:\Users\runneradmin\AppData\Local\tauri-bundler\
-            C:\Users\runneradmin\AppData\Local\tauri\
-          key: ${{ runner.os }}-tauri-${{ hashFiles('src-tauri/tauri.conf.json') }}
-
-      # 6️⃣ Installation des dépendances JS
+      # 4 - Installe les dépendances du projet
       - name: Install dependencies
         run: pnpm install
 
-      # 7️⃣ Build du frontend
+      # 5 - Build le frontend SvelteKit
       - name: Build SvelteKit
         run: pnpm build
 
-      # 8️⃣ Build de l’application Tauri
-      - name: Build Tauri App
+      # 6 - Build l’application Tauri
+      - name: Build Tauri App (Windows)
         run: pnpm tauri build
 
-      # 9️⃣ Upload de l’artefact (MSI par défaut)
+      # 7 - Upload du MSI
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: TauriApp-Windows-MSI
           path: src-tauri/target/release/bundle/msi/*.msi
 
-      # et de l'EXE
+      # 8 - Upload du EXE
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
