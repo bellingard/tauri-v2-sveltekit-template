@@ -1,0 +1,44 @@
+name: Build Tauri App for Windows
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      # 1️⃣ Récupère le code du dépôt
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Installe Node.js et pnpm
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # 3️⃣ Installe Rust (pour Tauri)
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      # 4️⃣ Installe les dépendances du projet
+      - name: Install dependencies
+        run: pnpm install
+
+      # 5️⃣ Build l’application Tauri
+      - name: Build Tauri App (Windows)
+        run: pnpm tauri build
+
+      # 6️⃣ Upload du build (.msi ou .exe)
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TauriApp-Windows
+          path: src-tauri/target/release/bundle/nsis/*.exe
