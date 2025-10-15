@@ -14,19 +14,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup pnpm (avec cache intégré)
+      # 2️⃣ Setup Node.js + cache pnpm
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 3️⃣ Setup pnpm (avec cache intégré)
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 9
           run_install: false
-
-      # 3️⃣ Setup Node.js + cache pnpm
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
+          cache: true
 
       # 4️⃣ Setup Rust (avec cache)
       - name: Cache Rust
