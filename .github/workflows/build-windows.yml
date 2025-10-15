@@ -26,7 +26,6 @@ jobs:
         with:
           version: 9
           run_install: false
-          cache: true
 
       # 4️⃣ Setup Rust (avec cache)
       - name: Cache Rust
@@ -56,8 +55,8 @@ jobs:
 
       # 6️⃣ Installation des dépendances JS
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
+        run: pnpm install
+        
       # 7️⃣ Build du frontend
       - name: Build SvelteKit
         run: pnpm build
